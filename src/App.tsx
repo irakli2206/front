@@ -5,6 +5,7 @@ import { Container, styled } from '@nextui-org/react';
 import Header from './components/Header';
 import { Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
+import Chirp from './pages/Chirp';
 
 function App() {
   const AppContainer = styled('div', {
@@ -35,6 +36,7 @@ function App() {
         </Routes> */}
       <Routes>
         <Route path='/' element={<Home />} />
+        <Route path='/posts/:postId' element={<Chirp />} />
       </Routes>
 
     </AppContainer>

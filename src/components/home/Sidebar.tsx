@@ -2,19 +2,24 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { styled, Input } from '@nextui-org/react'
 import ChirpCard from '../ChirpCard'
 import { FiRefreshCcw } from 'react-icons/fi'
-import {Chirp, ChirpData} from '../../types/types'
+import { Chirp, ChirpData } from '../../types/types'
 
 type Props = {
     posts: ChirpData[]
 }
 
-const Sidebar = ({posts}: Props) => {
+const Sidebar = ({ posts }: Props) => {
     const [windowWidth, setWindowWidth] = useState<number>(0)
     const [postInput, setPostInput] = useState<string>('')
+    const [expandedPostId, setExpandedPostId] = useState<string>('')
+
+    const expandPost = (postId: string) => {
+        setExpandedPostId(postId)
+    }
 
     useEffect(() => {
         const onResize = () => {
-            setWindowWidth(window.innerHeight)
+            setWindowWidth(window.innerWidth)
         }
 
         onResize()
@@ -31,11 +36,9 @@ const Sidebar = ({posts}: Props) => {
                 <SidebarContainer>
                     {/* <RefreshIcon /> */}
                     {posts.map((post) => {
-                         
                         return (
                             <ChirpCard
                                 {...post}
-
                             />
                         )
                     })}
@@ -47,7 +50,7 @@ const Sidebar = ({posts}: Props) => {
                             border: '2px solid $primary',
                             position: 'sticky',
                             bottom: 0,
-                            boxShadow: '0px 0px 50px 50px white',
+                            // boxShadow: '0px 0px 50px 50px white',
                             background: '$white'
                         }}
                     />

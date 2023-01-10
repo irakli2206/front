@@ -1,6 +1,7 @@
 import { Navbar, Button } from '@nextui-org/react'
 import React from 'react'
 import { SiReactrouter } from 'react-icons/si'
+import {ReactComponent as Logo} from '../assets/Logo.svg'
 
 const Header = () => {
 
@@ -8,6 +9,7 @@ const Header = () => {
     return (
         <Navbar variant='sticky'>
             <Navbar.Brand>
+                {/* <Logo width={60} height={60} /> */}
                 <SiReactrouter size={36} />
 
             </Navbar.Brand>

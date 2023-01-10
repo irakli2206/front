@@ -4,6 +4,7 @@ import Map, { useMap, ViewStateChangeEvent, MapProvider, Marker } from 'react-ma
 import 'mapbox-gl/dist/mapbox-gl.css';
 import Sidebar from '../components/home/Sidebar';
 import { Chirp, ChirpData } from '../types/types';
+import {RiMapPinFill} from 'react-icons/ri'
 
 const Home = () => {
     const [viewState, setViewState] = useState({
@@ -52,7 +53,6 @@ const Home = () => {
     return (
         <HomeContainer>
             {SidebarMemo}
-            {/* <Sidebar /> */}
             <HomeMap
                 {...viewState}
                 onIdle={getPosts}
@@ -67,7 +67,7 @@ const Home = () => {
                             latitude={post.coordinates.latitude}
                             longitude={post.coordinates.longitude}
                         >
-                            <div>{post.coordinates.latitude + ''}</div>
+                            <ChirpPin size={24} />
                         </Marker>
                     )
                 })}
@@ -75,6 +75,10 @@ const Home = () => {
         </HomeContainer>
     )
 }
+
+const ChirpPin = styled(RiMapPinFill, {
+    cursor: 'pointer'
+}) 
 
 const HomeContainer = styled('div', {
     width: '100%',

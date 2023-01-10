@@ -5,6 +5,7 @@ export type UserHandle = string
 export type UserId = string
 
 export interface Comment {
+    userId: UserId
     userHandle: UserHandle
     content: string
     date?: Date
@@ -16,6 +17,7 @@ export type Coordinates = {
 }
 
 export interface ChirpData {
+    _id: PostId
     userId: UserId
     comments: Comment[]
     likes: string[]
@@ -38,6 +40,7 @@ export interface Chirp {
 }
 
 export interface MongoDBUser {
+    _id: UserId,
     username: string
     userHandle: UserHandle
     userImage: ImageUrl
