@@ -12,6 +12,7 @@ import {
   Routes,
   BrowserRouter
 } from "react-router-dom"
+import { MapProvider } from 'react-map-gl';
 
 
 
@@ -66,17 +67,19 @@ const darkTheme = createTheme({
     }
   }
 })
- 
+
 
 root.render(
   <React.StrictMode>
 
     <NextUIProvider theme={lightTheme}>
       <BrowserRouter >
-        <App />
+        <MapProvider>
+          <App />
+        </MapProvider>
       </BrowserRouter>
     </NextUIProvider>
-  </React.StrictMode>
+  </React.StrictMode >
 );
 
 // If you want to start measuring performance in your app, pass a function

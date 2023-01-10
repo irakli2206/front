@@ -1,11 +1,14 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Card, Text, styled, Grid, Link, User } from '@nextui-org/react';
-import { Chirp, ImageUrl } from '../types/types';
+import { Chirp, ChirpData, ImageUrl } from '../types/types';
 import { FaRegComment, FaRegHeart, FaHeart } from 'react-icons/fa'
 
-type Props = Chirp
+type Props = ChirpData
 
-const ChirpCard = ({ username, userImage, content, date, likes, rechirps }: Props) => {
+const ChirpCard = ({ userId, content, coordinates, likes, comments }: Props) => {
+    const [liked, setLiked] = useState<boolean>(false)
+    const [user, setUser] = useState<any>({})
+    
     const CustomCard = styled(Card, {
         width: '100%',
         minHeight: '250px',
@@ -15,6 +18,15 @@ const ChirpCard = ({ username, userImage, content, date, likes, rechirps }: Prop
         // }
     })
 
+    useEffect(() => {
+        const getUserData = async() => {
+            const response = await fetch(`http://localhost:3000/api/users/${userId}`)
+            const userData = await response.json()
+            setUser(userData)
+        }
+        getUserData()
+    }, [])
+
     return (
         <CustomCard  >
             <Card.Header>
@@ -23,8 +35,8 @@ const ChirpCard = ({ username, userImage, content, date, likes, rechirps }: Prop
                     color='primary'
                     size='lg'
                     bordered
-                    src={userImage}
-                    name={username}
+                    src={user.userImage}
+                    name={user.username}
 
                 >
                     <User.Link href="" css={{ pointerEvents: 'none', fontSize: '$sm' }} >@unique_name</User.Link>
@@ -41,14 +53,27 @@ const ChirpCard = ({ username, userImage, content, date, likes, rechirps }: Prop
 
                 '& svg': {
                     color: '$primary',
+                    cursor: 'pointer'
                 }
             }}>
-
-                <FaRegHeart size={20} />
-                <FaRegComment size={20} />
+                <ReactionContainer>
+                    {liked ? <FaHeart size={20} onClick={() => setLiked(false)} /> : <FaRegHeart size={20} onClick={() => setLiked(true)} />}
+                    {likes.length}
+                </ReactionContainer>
+                <ReactionContainer>
+                    <FaRegComment size={20} />
+                    {true}
+                </ReactionContainer>
             </Card.Footer>
         </CustomCard>
     )
 }
+
+const ReactionContainer = styled('div', {
+    display: 'flex',
+    gap: '$xs',
+    alignItems: 'center',
+    color: '$accents5'
+})
 
 export default ChirpCard

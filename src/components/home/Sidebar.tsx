@@ -1,10 +1,16 @@
-import React, { useEffect, useState } from 'react'
-import { styled } from '@nextui-org/react'
-import { chirps } from '../../data/chirps'
+import React, { useEffect, useMemo, useState } from 'react'
+import { styled, Input } from '@nextui-org/react'
 import ChirpCard from '../ChirpCard'
+import { FiRefreshCcw } from 'react-icons/fi'
+import {Chirp, ChirpData} from '../../types/types'
 
-const Sidebar = () => {
+type Props = {
+    posts: ChirpData[]
+}
+
+const Sidebar = ({posts}: Props) => {
     const [windowWidth, setWindowWidth] = useState<number>(0)
+    const [postInput, setPostInput] = useState<string>('')
 
     useEffect(() => {
         const onResize = () => {
@@ -17,19 +23,34 @@ const Sidebar = () => {
         return () => window.removeEventListener('resize', onResize)
     }, [])
 
+    console.log(posts)
 
     return (
         <>
             {windowWidth > 900 ?
                 <SidebarContainer>
-                    {chirps.map((chirp) => {
+                    {/* <RefreshIcon /> */}
+                    {posts.map((post) => {
+                         
                         return (
                             <ChirpCard
-                                {...chirp}
+                                {...post}
 
                             />
                         )
                     })}
+                    <Input size='xl' placeholder='Post something...'
+                        animated={false}
+                        value={postInput}
+                        onChange={(e) => setPostInput(e.target.value)}
+                        css={{
+                            border: '2px solid $primary',
+                            position: 'sticky',
+                            bottom: 0,
+                            boxShadow: '0px 0px 50px 50px white',
+                            background: '$white'
+                        }}
+                    />
                 </SidebarContainer>
                 :
                 null
@@ -39,10 +60,26 @@ const Sidebar = () => {
     )
 }
 
+const RefreshIcon = styled(FiRefreshCcw, {
+    position: 'fixed',
+    height: 30,
+    width: 30,
+    top: 20,
+    right: 20,
+    zIndex: 20,
+    color: '$primary',
+    dropShadow: '$lg',
+    cursor: 'pointer'
+})
+
+const CustomInput = styled(Input, {
+
+})
+
 const SidebarContainer = styled('div', {
     width: 'clamp(400px, 45%, 700px)',
     background: '$white',
-    height: '100%',
+    minHeight: '100%',
     dropShadow: '$md',
     position: 'relative',
     zIndex: 10,
