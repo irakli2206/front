@@ -1,4 +1,4 @@
-import { Container, styled, User, Text, Divider } from '@nextui-org/react';
+import { Container, styled, User, Text, Divider, Input } from '@nextui-org/react';
 import React, { useEffect, useState } from 'react'
 import { FaHeart, FaRegHeart, FaRegComment } from 'react-icons/fa';
 import { useParams } from 'react-router-dom';
@@ -14,6 +14,8 @@ const Chirp = () => {
 
     const [likeCount, setLikeCount] = useState<number>(0)
     const [commentCount, setCommentCount] = useState<number>(0)
+
+    const [commentInput ,setCommentInput] = useState<string>('')
 
     let { postId } = useParams();
     console.log(postId)
@@ -50,7 +52,7 @@ const Chirp = () => {
                 const commentAuthor = await fetch(`http://localhost:3000/api/users/${comment.userId!}`)
                 const authorData = await commentAuthor.json()
                 const currentComments = [...comments]
-                if(currentComments.length < post.comments.length){
+                if (currentComments.length < post.comments.length) {
                     currentComments.push({
                         ...authorData,
                         content: comment.content
@@ -109,7 +111,7 @@ const Chirp = () => {
                         name={user.username}
 
                     >
-                        <User.Link href="" css={{ pointerEvents: 'none', fontSize: '$md' }} >{user.userHandle}</User.Link>
+                        <User.Link href="" css={{ pointerEvents: 'none', fontSize: '$md' }} >{`@${user.userHandle}`}</User.Link>
                     </User>
 
                     <Text size={'$xl'} css={{
@@ -135,6 +137,16 @@ const Chirp = () => {
                         </ReactionContainer>
                     </ReactionsContainer>
                     <Divider />
+                    <Input  value={commentInput} onChange={(e) => setCommentInput(e.currentTarget.value)} 
+                    placeholder='Write a comment...'
+                    
+                    size='xl'
+                        css={{
+                            py: '$md',
+                            width: '100%',
+
+                        }}
+                    />
                     <CommentsContainer>
                         {comments.map(comment => {
                             console.log(comment)

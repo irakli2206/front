@@ -6,6 +6,8 @@ import Header from './components/Header';
 import { Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
 import Chirp from './pages/Chirp';
+import Signup from './pages/Signup';
+import Login from './pages/Login';
 
 function App() {
   const AppContainer = styled('div', {
@@ -37,6 +39,8 @@ function App() {
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/posts/:postId' element={<Chirp />} />
+        <Route path='/signup' element={<Signup />} />
+        <Route path='/login' element={<Login />} />
       </Routes>
 
     </AppContainer>

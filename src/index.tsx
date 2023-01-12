@@ -36,6 +36,9 @@ const lightTheme = createTheme({
       primarySolidContrast: '$white',
       primaryShadow: '$green100',
       link: '#4ADE7B',
+
+      gradient: 'linear-gradient(112deg, $green700 -25%, $green600 -10%, $green500 80%)',
+
     },
     fonts: {
       sans: 'Quicksand',
