@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Card, Text, styled, Grid, Link, User } from '@nextui-org/react';
-import { Chirp, ChirpData, ImageUrl } from '../types/types';
+import { Chirp, ChirpData, ImageUrl, LoggedUser, UserHandle } from '../types/types';
 import { FaRegComment, FaRegHeart, FaHeart } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom';
 
@@ -10,7 +10,8 @@ type Props = ChirpData & {
 
 const ChirpCard = ({ _id: postId, userId, content, coordinates, likes, comments }: Props) => {
     const [liked, setLiked] = useState<boolean>(false)
-    const [user, setUser] = useState<any>({})
+    const [author, setAuthor] = useState<any>({})
+    const [user, setUser] = useState<LoggedUser>()
 
     const [likeCount, setLikeCount] = useState<number>(likes.length)
     const [commentCount, setCommentCount] = useState<number>(comments.length)
@@ -19,20 +20,28 @@ const ChirpCard = ({ _id: postId, userId, content, coordinates, likes, comments 
 
 
     useEffect(() => {
-        if (likes.includes(userId)) setLiked(true)
+        const loggedUser = localStorage.getItem('user')
+        if (loggedUser) {
+            let userObject = JSON.parse(loggedUser)
+            setUser(userObject)
+        }
+        else return
+
+        const isLiked: boolean = likes.some(l => user?.likedPosts.includes(l))
+        if (isLiked) setLiked(true)
 
 
-        const getUserData = async () => {
+        const getAuthorData = async () => {
             const response = await fetch(`http://localhost:3000/api/users/${userId}`)
             const userData = await response.json()
-            setUser(userData)
+            setAuthor(userData)
         }
-        getUserData()
+        getAuthorData()
     }, [])
 
     const likePost = async () => {
         let body = {
-            userId,
+            user: user?._id,
             postId
         }
         const res = await fetch('http://localhost:3000/api/posts/like', {
@@ -43,6 +52,7 @@ const ChirpCard = ({ _id: postId, userId, content, coordinates, likes, comments 
             body: JSON.stringify(body)
         })
         if (liked) {
+            console.log('reached')
             setLiked(false)
             setLikeCount(prev => --prev)
         }
@@ -55,10 +65,11 @@ const ChirpCard = ({ _id: postId, userId, content, coordinates, likes, comments 
 
     return (
         <>
-            <CardWrapper onClick={() => {
-                    navigate(`posts/${postId}`)
-                }
-                } >
+            <CardWrapper
+            // onClick={() => {
+            //     navigate(`posts/${postId}`)
+            // }}
+            >
                 <CustomCard >
                     <Card.Header >
                         <User
@@ -66,11 +77,11 @@ const ChirpCard = ({ _id: postId, userId, content, coordinates, likes, comments 
                             color='primary'
                             size='lg'
                             bordered
-                            src={user.userImage}
-                            name={user.username}
+                            src={author.userImage}
+                            name={author.username}
 
                         >
-                            <User.Link href="" css={{ pointerEvents: 'none', fontSize: '$sm' }} >@unique_name</User.Link>
+                            <User.Link href="" css={{ pointerEvents: 'none', fontSize: '$sm' }} >@{author.userHandle}</User.Link>
                         </User>
                     </Card.Header>
                     <Card.Body css={{ py: "$2" }}>

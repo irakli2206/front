@@ -6,8 +6,8 @@ import * as Yup from 'yup'
 import InputError from '../components/InputError'
 
 type FormData = {
+    userHandle: string
     username: string
-    publicName: string
     password: string
     passwordConfirm: string
 }
@@ -16,27 +16,40 @@ const Signup = () => {
     const navigate = useNavigate()
 
     const schema = Yup.object().shape({
+        userHandle: Yup.string().max(24, "Must be 20 characters or less").required("Required"),
         username: Yup.string().max(24, "Must be 20 characters or less").required("Required"),
-        publicName: Yup.string().max(24, "Must be 20 characters or less").required("Required"),
         password: Yup.string().min(8, 'Password has to be at least 8 characters').required("Required"),
         passwordConfirm: Yup.string().oneOf([Yup.ref('password')], "Password doesn't match").required("Required"),
     })
 
 
     const signUp = async (formData: FormData) => {
-        let res = await fetch('http://localhost:3000/api/users/register', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                userHandle: formData.username,
-                username: formData.publicName,
-                password: formData.password,
-                passwordConfirm: formData.passwordConfirm,
+        try {
+            let res = await fetch('http://localhost:3000/api/users/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userHandle: formData.userHandle,
+                    username: formData.username,
+                    password: formData.password,
+                    passwordConfirm: formData.passwordConfirm,
 
+                })
             })
-        }).then((res) => {if(res.ok) navigate('/login')}).catch(e => console.error(e))
+
+            if (res.ok) navigate('/login')
+            else {
+                const data = await res?.json()
+                console.log(data)
+                throw data
+            }
+
+        } catch (e) {
+            throw e
+        }
+
     }
 
 
@@ -64,33 +77,40 @@ const Signup = () => {
                 >Already have an account? <Link>Log In</Link></Text>
                 <Spacer y={2} />
                 <Formik initialValues={{
+                    userHandle: '',
                     username: '',
-                    publicName: '',
                     password: '',
                     passwordConfirm: ''
                 }}
                     validationSchema={schema}
                     onSubmit={async (vals, actions) => {
-                        await signUp(vals)
+                        await signUp(vals).catch(e => {
+                            if(e.error == 'User already exists'){
+                                actions.setFieldError('userHandle', e.error)
+                            }
+                            else if(e.error == 'Password mismatch'){
+                                actions.setFieldError('passwordConfirm', e.error)
+                            }
+                        })
                     }}>
                     {({ errors, touched }) => (
                         <Form
                             style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
                         >
-                            <Field as={Input} size='xl' name='username' labelPlaceholder='Username'
+                            <Field as={Input} size='xl' name='userHandle' labelPlaceholder='User Handle'
+                                css={{
+                                    width: 'clamp(250px, 80%, 400px)'
+                                }}
+                            />
+                            {errors.userHandle && touched.userHandle && <InputError>{errors.userHandle}</InputError>}
+                            <Spacer y={2} />
+                            <Field as={Input} size='xl' name='username'
+                                labelPlaceholder='Username'
                                 css={{
                                     width: 'clamp(250px, 80%, 400px)'
                                 }}
                             />
                             {errors.username && touched.username && <InputError>{errors.username}</InputError>}
-                            <Spacer y={2} />
-                            <Field as={Input} size='xl' name='publicName'
-                                labelPlaceholder='Public name'
-                                css={{
-                                    width: 'clamp(250px, 80%, 400px)'
-                                }}
-                            />
-                            {errors.publicName && touched.publicName && <InputError>{errors.publicName}</InputError>}
                             <Spacer y={2} />
                             <Field as={Input.Password} size='xl' name='password' labelPlaceholder="Password"
                                 css={{

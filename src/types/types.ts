@@ -39,7 +39,7 @@ export interface Chirp {
     //coords
 }
 
-export interface MongoDBUser {
+export interface LoggedUser {
     _id: UserId,
     username: string
     userHandle: UserHandle

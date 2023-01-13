@@ -2,12 +2,12 @@ import { Container, styled, User, Text, Divider, Input } from '@nextui-org/react
 import React, { useEffect, useState } from 'react'
 import { FaHeart, FaRegHeart, FaRegComment } from 'react-icons/fa';
 import { useParams } from 'react-router-dom';
-import { ChirpData, MongoDBUser } from '../types/types';
+import { ChirpData, LoggedUser } from '../types/types';
 import Comment from '../components/Comment';
 
 const Chirp = () => {
     const [post, setPost] = useState<ChirpData>()
-    const [user, setUser] = useState<MongoDBUser>()
+    const [user, setUser] = useState<LoggedUser>()
     const [comments, setComments] = useState<any[]>([])
 
     const [liked, setLiked] = useState<boolean>(false)
@@ -37,7 +37,7 @@ const Chirp = () => {
         const getUserData = async () => {
             if (post) {
                 //@ts-ignore
-                const response = await fetch(`http://localhost:3000/api/users/${post.userId!}`)
+                const response = await fetch(`http://localhost:3000/api/users/${post.userId!}`) 
                 const userData = await response.json()
                 setLiked(post.likes.includes(userData._id))
                 setUser(userData)
