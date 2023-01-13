@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Card, Text, styled, Grid, Link, User } from '@nextui-org/react';
-import { Chirp, ChirpData, ImageUrl, LoggedUser, UserHandle } from '../types/types';
+import { Chirp, ChirpData, ImageUrl, UserType, UserHandle } from '../types/types';
 import { FaRegComment, FaRegHeart, FaHeart } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom';
 
@@ -11,7 +11,7 @@ type Props = ChirpData & {
 const ChirpCard = ({ _id: postId, userId, content, coordinates, likes, comments }: Props) => {
     const [liked, setLiked] = useState<boolean>(false)
     const [author, setAuthor] = useState<any>({})
-    const [user, setUser] = useState<LoggedUser>()
+    const [user, setUser] = useState<UserType>()
 
     const [likeCount, setLikeCount] = useState<number>(likes.length)
     const [commentCount, setCommentCount] = useState<number>(comments.length)

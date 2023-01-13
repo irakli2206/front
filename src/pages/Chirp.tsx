@@ -2,12 +2,14 @@ import { Container, styled, User, Text, Divider, Input } from '@nextui-org/react
 import React, { useEffect, useState } from 'react'
 import { FaHeart, FaRegHeart, FaRegComment } from 'react-icons/fa';
 import { useParams } from 'react-router-dom';
-import { ChirpData, LoggedUser } from '../types/types';
+import { ChirpData, UserType } from '../types/types';
 import Comment from '../components/Comment';
+import { RiSendPlaneFill } from 'react-icons/ri'
 
 const Chirp = () => {
     const [post, setPost] = useState<ChirpData>()
-    const [user, setUser] = useState<LoggedUser>()
+    const [author, setAuthor] = useState<UserType>()
+    const [user, setUser] = useState<UserType>()
     const [comments, setComments] = useState<any[]>([])
 
     const [liked, setLiked] = useState<boolean>(false)
@@ -15,10 +17,18 @@ const Chirp = () => {
     const [likeCount, setLikeCount] = useState<number>(0)
     const [commentCount, setCommentCount] = useState<number>(0)
 
-    const [commentInput ,setCommentInput] = useState<string>('')
+    const [commentInput, setCommentInput] = useState<string>('')
 
     let { postId } = useParams();
-    console.log(postId)
+
+    useEffect(() => {
+        if (localStorage.getItem('user')) {
+            //@ts-ignore
+            const loggedUser = JSON.parse(localStorage.getItem('user'))
+            setUser(loggedUser)
+        }
+
+    }, [])
 
     useEffect(() => {
         const getPostData = async () => {
@@ -34,34 +44,24 @@ const Chirp = () => {
     }, [])
 
     useEffect(() => {
-        const getUserData = async () => {
+        const getAuthorData = async () => {
             if (post) {
                 //@ts-ignore
-                const response = await fetch(`http://localhost:3000/api/users/${post.userId!}`) 
-                const userData = await response.json()
-                setLiked(post.likes.includes(userData._id))
-                setUser(userData)
+                const response = await fetch(`http://localhost:3000/api/users/${post.userId!}`)
+                const authorData = await response.json()
+                setAuthor(authorData)
             }
         }
-        getUserData()
+        getAuthorData()
     }, [post])
 
     useEffect(() => {
         const getCommentData = async () => {
-            post?.comments.forEach(async (comment, index) => {
-                const commentAuthor = await fetch(`http://localhost:3000/api/users/${comment.userId!}`)
-                const authorData = await commentAuthor.json()
-                const currentComments = [...comments]
-                if (currentComments.length < post.comments.length) {
-                    currentComments.push({
-                        ...authorData,
-                        content: comment.content
-                    })
-                }
+            if (post && post.comments) {
+                console.log(post.comments)
+                setComments(post.comments.map(c => ({userHandle: 'test', username: 'test', content: c.content})))
+            }
 
-                setComments(currentComments)
-                console.log(authorData)
-            })
         }
 
         getCommentData()
@@ -93,9 +93,33 @@ const Chirp = () => {
 
     }
 
+    const writeComment = async () => {
+        //Checking user exists and input isn't empty
+        if (user && commentInput.replace(' ', '').length > 0) {
+            const body = {
+                userId: user._id,
+                content: commentInput
+            }
+            const res = await fetch(`http://localhost:3000/api/posts/${postId}/write-comment`, {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                method: 'POST',
+                body: JSON.stringify(body)
+            })
+            if (res.ok) {
+                const data = await res.json()
+                setPost(data.newPost)
+            }
+        }
+        else console.log('NO USER LOGGED IN')
+
+    }
+
+
     return (
         <>
-            {(user && post) &&
+            {(author && post) &&
                 <CustomContainer sm>
                     <User
                         css={{
@@ -107,11 +131,11 @@ const Chirp = () => {
                         color='primary'
                         size='xl'
                         bordered
-                        src={user.userImage}
-                        name={user.username}
+                        src={author.userImage}
+                        name={author.username}
 
                     >
-                        <User.Link href="" css={{ pointerEvents: 'none', fontSize: '$md' }} >{`@${user.userHandle}`}</User.Link>
+                        <User.Link href="" css={{ pointerEvents: 'none', fontSize: '$md' }} >{`@${author.userHandle}`}</User.Link>
                     </User>
 
                     <Text size={'$xl'} css={{
@@ -137,20 +161,30 @@ const Chirp = () => {
                         </ReactionContainer>
                     </ReactionsContainer>
                     <Divider />
-                    <Input  value={commentInput} onChange={(e) => setCommentInput(e.currentTarget.value)} 
-                    placeholder='Write a comment...'
-                    
-                    size='xl'
+                    <Input value={commentInput} onChange={(e) => setCommentInput(e.currentTarget.value)}
+                        placeholder='Write a comment...'
+                        contentRightStyling={false}
+                        contentRight={
+                            <RiSendPlaneFill onClick={writeComment} size={32} />
+                        }
+                        size='xl'
                         css={{
                             py: '$md',
                             width: '100%',
+                            '& span': {
+                                color: '$primary',
+                                display: 'flex',
+                                alignItems: 'center',
+                                margin: '0 10px',
+                                cursor: 'pointer',
 
+                            }
                         }}
                     />
                     <CommentsContainer>
-                        {comments.map(comment => {
+                        {comments.map((comment, index) => {
                             console.log(comment)
-                            return <Comment {...comment} />
+                            return <Comment key={index} {...comment} />
                         })}
                     </CommentsContainer>
                 </CustomContainer>}
@@ -162,7 +196,7 @@ const Chirp = () => {
 const CommentsContainer = styled('div', {
     display: 'flex',
     flexDirection: 'column',
-    gap: '$8',
+    gap: '$12',
     py: '$8'
 })
 

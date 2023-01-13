@@ -12,7 +12,7 @@ const Comment = ({ userImage, username, userHandle, content }: Props) => {
     return (
         <User
             css={{
-                paddingLeft: 0, cursor: 'pointer',
+                paddingLeft: 0, 
                 '& *': {
                     fontSize: '$xl'
                 }

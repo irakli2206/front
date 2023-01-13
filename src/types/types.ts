@@ -39,7 +39,7 @@ export interface Chirp {
     //coords
 }
 
-export interface LoggedUser {
+export interface UserType {
     _id: UserId,
     username: string
     userHandle: UserHandle
