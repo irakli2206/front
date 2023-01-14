@@ -10,7 +10,7 @@ type Props = ChirpData & {
 
 const ChirpCard = ({ _id: postId, userId, content, coordinates, likes, comments }: Props) => {
     const [liked, setLiked] = useState<boolean>(false)
-    const [author, setAuthor] = useState<any>({})
+    const [author, setAuthor] = useState<UserType>()
     const [user, setUser] = useState<UserType>()
 
     const [likeCount, setLikeCount] = useState<number>(likes.length)
@@ -18,22 +18,21 @@ const ChirpCard = ({ _id: postId, userId, content, coordinates, likes, comments 
 
     const navigate = useNavigate()
 
-
     useEffect(() => {
         const loggedUser = localStorage.getItem('user')
         if (loggedUser) {
             let userObject = JSON.parse(loggedUser)
             setUser(userObject)
         }
-        else return
 
         const isLiked: boolean = likes.some(l => user?.likedPosts.includes(l))
         if (isLiked) setLiked(true)
 
-
         const getAuthorData = async () => {
+            console.log(userId)
             const response = await fetch(`http://localhost:3000/api/users/${userId}`)
             const userData = await response.json()
+            console.log(userData)
             setAuthor(userData)
         }
         getAuthorData()
@@ -65,7 +64,7 @@ const ChirpCard = ({ _id: postId, userId, content, coordinates, likes, comments 
 
     return (
         <>
-            <CardWrapper
+            {author && <CardWrapper
             // onClick={() => {
             //     navigate(`posts/${postId}`)
             // }}
@@ -113,7 +112,7 @@ const ChirpCard = ({ _id: postId, userId, content, coordinates, likes, comments 
                         </ReactionContainer>
                     </Card.Footer>
                 </CustomCard>
-            </CardWrapper>
+            </CardWrapper>}
         </>
     )
 }

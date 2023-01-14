@@ -22,13 +22,26 @@ const Chirp = () => {
     let { postId } = useParams();
 
     useEffect(() => {
-        if (localStorage.getItem('user')) {
-            //@ts-ignore
-            const loggedUser = JSON.parse(localStorage.getItem('user'))
-            setUser(loggedUser)
-        }
+        const getLoggedUser = async () => {
+            if (localStorage.getItem('user')) {
+                //have to refresh the user any time this gets rerendered
+                //@ts-ignore
+                const loggedUser = JSON.parse(localStorage.getItem('user'))
+                const newUserResponse = await fetch(`http://localhost:3000/api/users/${loggedUser._id}`)
+                const newUser = await newUserResponse.json()
+                localStorage.setItem('user', JSON.stringify(newUser))
+                setUser(loggedUser)
+                //if user has this post liked, show that in UI
+                if(user && post?.likes.includes(user._id)) {
+                    setLiked(true)
+                    console.log('jdkajdksj')
+                }
 
-    }, [])
+            }
+        }
+        getLoggedUser()
+
+    }, [post])
 
     useEffect(() => {
         const getPostData = async () => {
@@ -37,6 +50,7 @@ const Chirp = () => {
             setLikeCount(postData.likes.length)
             setCommentCount(postData.comments.length)
             setPost(postData)
+
         }
 
         getPostData()
@@ -58,8 +72,15 @@ const Chirp = () => {
     useEffect(() => {
         const getCommentData = async () => {
             if (post && post.comments) {
-                console.log(post.comments)
-                setComments(post.comments.map(c => ({userHandle: 'test', username: 'test', content: c.content})))
+                Promise.all(post.comments.map(async (comment) => {
+                    let commentAuthorResponse = await fetch(`http://localhost:3000/api/users/${comment.userId}`)
+                    let commentAuthor = await commentAuthorResponse.json()
+                    return { ...commentAuthor, content: comment.content }
+                })).then(commentsData => {
+                    console.log(commentsData)
+                    setComments(commentsData)
+                }
+                )
             }
 
         }
@@ -110,6 +131,8 @@ const Chirp = () => {
             if (res.ok) {
                 const data = await res.json()
                 setPost(data.newPost)
+                setCommentCount(prev => prev + 1)
+                setCommentInput('')
             }
         }
         else console.log('NO USER LOGGED IN')
@@ -161,29 +184,30 @@ const Chirp = () => {
                         </ReactionContainer>
                     </ReactionsContainer>
                     <Divider />
-                    <Input value={commentInput} onChange={(e) => setCommentInput(e.currentTarget.value)}
-                        placeholder='Write a comment...'
-                        contentRightStyling={false}
-                        contentRight={
-                            <RiSendPlaneFill onClick={writeComment} size={32} />
-                        }
-                        size='xl'
-                        css={{
-                            py: '$md',
-                            width: '100%',
-                            '& span': {
-                                color: '$primary',
-                                display: 'flex',
-                                alignItems: 'center',
-                                margin: '0 10px',
-                                cursor: 'pointer',
-
+                    <form action="">
+                        <Input value={commentInput} onChange={(e) => setCommentInput(e.currentTarget.value)}
+                            placeholder='Write a comment...'
+                            contentRightStyling={false}
+                            contentRight={
+                                <RiSendPlaneFill type='submit' onClick={writeComment} size={32} />
                             }
-                        }}
-                    />
+                            size='xl'
+                            css={{
+                                py: '$md',
+                                width: '100%',
+                                '& span': {
+                                    color: '$primary',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    margin: '0 10px',
+                                    cursor: 'pointer',
+
+                                }
+                            }}
+                        />
+                    </form>
                     <CommentsContainer>
                         {comments.map((comment, index) => {
-                            console.log(comment)
                             return <Comment key={index} {...comment} />
                         })}
                     </CommentsContainer>
@@ -219,7 +243,8 @@ const ReactionContainer = styled('div', {
 })
 
 const CustomContainer = styled(Container, {
-    minHeight: '100vh',
+    height: 'calc(100vh - 76px)',
+    maxHeight: 'calc(100vh - 76px)',
     paddingBlock: '$16'
 })
 

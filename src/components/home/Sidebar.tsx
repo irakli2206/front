@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { styled, Input } from '@nextui-org/react'
+import { styled, Input, Tooltip } from '@nextui-org/react'
 import ChirpCard from '../ChirpCard'
 import { FiRefreshCcw } from 'react-icons/fi'
-import { Chirp, ChirpData } from '../../types/types'
+import { Chirp, ChirpData, UserType } from '../../types/types'
 
 type Props = {
     posts: ChirpData[]
@@ -12,6 +12,16 @@ const Sidebar = ({ posts }: Props) => {
     const [windowWidth, setWindowWidth] = useState<number>(0)
     const [postInput, setPostInput] = useState<string>('')
     const [expandedPostId, setExpandedPostId] = useState<string>('')
+    const [user, setUser] = useState<UserType>()
+
+    useEffect(() => {
+        const loggedUser = localStorage.getItem('user')
+        if (loggedUser) {
+            let userObject = JSON.parse(loggedUser)
+            setUser(userObject)
+        }
+
+    }, [])
 
     const expandPost = (postId: string) => {
         setExpandedPostId(postId)
@@ -42,18 +52,22 @@ const Sidebar = ({ posts }: Props) => {
                             />
                         )
                     })}
-                    <Input size='xl' placeholder='Post something...'
-                        animated={false}
-                        value={postInput}
-                        onChange={(e) => setPostInput(e.target.value)}
-                        css={{
-                            border: '2px solid $primary',
-                            position: 'sticky',
-                            bottom: 0,
-                            // boxShadow: '0px 0px 50px 50px white',
-                            background: '$white'
-                        }}
-                    />
+                    <Tooltip content={user ? '' : 'You have to log in to make a post'} css={{ '& .nextui-tooltip-button': { width: '100%' } }}>
+                        <Input size='xl' placeholder='Post something...'
+                            animated={false}
+                            value={postInput}
+                            onChange={(e) => setPostInput(e.target.value)}
+                            disabled={!user}
+                            css={{
+                                border: '2px solid $primary',
+                                position: 'sticky',
+                                bottom: 0,
+                                // boxShadow: '0px 0px 50px 50px white',
+                                background: '$white',
+                                width: '100%'
+                            }}
+                        />
+                    </Tooltip>
                 </SidebarContainer>
                 :
                 null
