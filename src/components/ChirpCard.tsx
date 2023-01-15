@@ -19,46 +19,57 @@ const ChirpCard = ({ _id: postId, userId, content, coordinates, likes, comments 
     const navigate = useNavigate()
 
     useEffect(() => {
-        const loggedUser = localStorage.getItem('user')
-        if (loggedUser) {
-            let userObject = JSON.parse(loggedUser)
-            setUser(userObject)
+        const getLoggedUser = async() => {
+            const loggedUser = localStorage.getItem('userId')
+            if (loggedUser) {
+                let userId = JSON.parse(loggedUser)
+                const refreshedUserResponse = await fetch(`http://localhost:3000/api/users/${userId}`)
+                const refreshedUser = await refreshedUserResponse.json()
+                console.log(refreshedUser)
+                const isLiked: boolean = refreshedUser.likedPosts.includes(postId)
+                console.log(isLiked)
+                if (isLiked) setLiked(true)
+                setUser(refreshedUser)
+            }
         }
 
-        const isLiked: boolean = likes.some(l => user?.likedPosts.includes(l))
-        if (isLiked) setLiked(true)
+        getLoggedUser()
+
+ 
+
 
         const getAuthorData = async () => {
-            console.log(userId)
             const response = await fetch(`http://localhost:3000/api/users/${userId}`)
             const userData = await response.json()
-            console.log(userData)
             setAuthor(userData)
         }
         getAuthorData()
     }, [])
 
     const likePost = async () => {
-        let body = {
-            user: user?._id,
-            postId
+        if (user) {
+            let body = {
+                userId: user?._id,
+                postId
+            }
+            const res = await fetch('http://localhost:3000/api/posts/like', {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                method: 'POST',
+                body: JSON.stringify(body)
+            })
+            if (liked) {
+                setLiked(false)
+                setLikeCount(prev => --prev)
+            }
+            else {
+                setLiked(true)
+                setLikeCount(prev => ++prev)
+            }
         }
-        const res = await fetch('http://localhost:3000/api/posts/like', {
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            method: 'POST',
-            body: JSON.stringify(body)
-        })
-        if (liked) {
-            console.log('reached')
-            setLiked(false)
-            setLikeCount(prev => --prev)
-        }
-        else {
-            setLiked(true)
-            setLikeCount(prev => ++prev)
-        }
+        else console.log('NO USER LOGGED IN')
+
 
     }
 
@@ -76,7 +87,8 @@ const ChirpCard = ({ _id: postId, userId, content, coordinates, likes, comments 
                             color='primary'
                             size='lg'
                             bordered
-                            src={author.userImage}
+                            // src={author.userImage ? author.userImage : 'https://www.colorhexa.com/4ade94.png'}
+                            src={''}
                             name={author.username}
 
                         >
@@ -118,7 +130,7 @@ const ChirpCard = ({ _id: postId, userId, content, coordinates, likes, comments 
 }
 
 const CardWrapper = styled('div', {
-    cursor: 'pointer'
+
 })
 
 const CustomCard = styled(Card, {

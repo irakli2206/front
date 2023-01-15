@@ -8,6 +8,7 @@ import Home from './pages/Home';
 import Chirp from './pages/Chirp';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
+import Profile from './pages/Profile';
 
 function App() {
   const AppContainer = styled('div', {
@@ -38,6 +39,7 @@ function App() {
         </Routes> */}
       <Routes>
         <Route path='/' element={<Home />} />
+        <Route path='/:userhandle/profile' element={<Profile />} />
         <Route path='/posts/:postId' element={<Chirp />} />
         <Route path='/signup' element={<Signup />} />
         <Route path='/login' element={<Login />} />

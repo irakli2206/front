@@ -4,26 +4,43 @@ import Map, { useMap, ViewStateChangeEvent, MapProvider, Marker } from 'react-ma
 import 'mapbox-gl/dist/mapbox-gl.css';
 import Sidebar from '../components/home/Sidebar';
 import { Chirp, ChirpData } from '../types/types';
-import {RiMapPinFill} from 'react-icons/ri'
+import { RiMapPinFill } from 'react-icons/ri'
+import { useLocation, useSearchParams } from 'react-router-dom';
 
 const Home = () => {
     const [viewState, setViewState] = useState({
-        longitude: 43,
         latitude: 43,
+        longitude: 43,
         zoom: 6
     });
     const [posts, setPosts] = useState<ChirpData[]>([])
     const { mainMap } = useMap()
+    const [searchParams, setSearchParams] = useSearchParams();
 
+    // const location = useLocation()
 
+    useEffect(() => {
+
+        const defaultViewState = {
+            //@ts-ignore
+            latitude: searchParams.get('lat') ? +searchParams.get('lat') : 43,
+            //@ts-ignore
+            longitude: searchParams.get('long') ? +searchParams.get('long') : 43,
+            //@ts-ignore
+            zoom: searchParams.get('z') ? +searchParams.get('z') : 6,
+        }
+        setViewState(defaultViewState)
+    }, [])
 
     const onMove = (e: ViewStateChangeEvent) => {
         setViewState(e.viewState)
     }
+ 
 
     const getPosts = async () => {
         if (mainMap) {
             const mapBounds = mainMap.getBounds()
+            setSearchParams(`lat=${viewState.latitude}&long=${viewState.longitude}&z=${viewState.zoom}`)
             const coordData = {
                 minLat: mapBounds.getSouth(),
                 maxLat: mapBounds.getNorth(),
@@ -38,7 +55,6 @@ const Home = () => {
                 body: JSON.stringify(coordData),
 
             })
-            console.log(JSON.stringify(coordData))
             let areaPosts = await response.json()
             console.log(areaPosts)
             setPosts(areaPosts)
@@ -47,7 +63,7 @@ const Home = () => {
 
 
 
-    const SidebarMemo = React.useMemo(() => <Sidebar posts={posts} />, [posts])
+    const SidebarMemo = React.useMemo(() => <Sidebar posts={posts} updatePosts={setPosts} />, [posts])
 
 
     return (
@@ -78,7 +94,7 @@ const Home = () => {
 
 const ChirpPin = styled(RiMapPinFill, {
     cursor: 'pointer'
-}) 
+})
 
 const HomeContainer = styled('div', {
     width: '100%',

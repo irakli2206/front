@@ -48,3 +48,8 @@ export interface UserType {
     posts: PostId[]
     likedPosts: PostId[]
 }
+
+export interface Settings {
+    mapZoom: number
+    maxVisiblePosts: number 
+}

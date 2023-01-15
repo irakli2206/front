@@ -23,16 +23,15 @@ const Chirp = () => {
 
     useEffect(() => {
         const getLoggedUser = async () => {
-            if (localStorage.getItem('user')) {
+            if (localStorage.getItem('userId')) {
                 //have to refresh the user any time this gets rerendered
                 //@ts-ignore
-                const loggedUser = JSON.parse(localStorage.getItem('user'))
-                const newUserResponse = await fetch(`http://localhost:3000/api/users/${loggedUser._id}`)
-                const newUser = await newUserResponse.json()
-                localStorage.setItem('user', JSON.stringify(newUser))
+                const loggedUserId = JSON.parse(localStorage.getItem('userId'))
+                const loggedUserResponse = await fetch(`http://localhost:3000/api/users/${loggedUserId}`)
+                const loggedUser = await loggedUserResponse.json()
                 setUser(loggedUser)
                 //if user has this post liked, show that in UI
-                if(user && post?.likes.includes(user._id)) {
+                if (user && post?.likes.includes(user._id)) {
                     setLiked(true)
                     console.log('jdkajdksj')
                 }

@@ -35,11 +35,10 @@ const Login = () => {
             if (res.ok) {
                 const data = await res?.json()
                 //@ts-ignore
-                const loggedUser = {...data.user}
-                delete loggedUser.password
+                const loggedUser = { ...data.user }
                 console.log(loggedUser)
                 localStorage.setItem('token', data.access_token)
-                localStorage.setItem('user', JSON.stringify(loggedUser))
+                localStorage.setItem('userId', JSON.stringify(loggedUser._id))
                 navigate('/')
             }
             else {
@@ -74,7 +73,7 @@ const Login = () => {
                     validationSchema={schema}
                     onSubmit={async (vals, actions) => {
                         await login(vals).catch(e => {
-                            if(e.message == 'You have entered a wrong username or password'){
+                            if (e.message == 'You have entered a wrong username or password') {
                                 actions.setFieldError('password', e.message)
                             }
                         })
@@ -85,6 +84,7 @@ const Login = () => {
                         >
                             <Spacer y={2} />
                             <Field as={Input} size='xl' name='userHandle' labelPlaceholder='User Handle'
+
                                 css={{
                                     width: 'clamp(250px, 80%, 400px)'
                                 }}
