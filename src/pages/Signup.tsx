@@ -39,7 +39,7 @@ const Signup = () => {
                 })
             })
 
-            if (res.ok) navigate('/login')
+            if (res.ok) navigate('/auth/login')
             else {
                 const data = await res?.json()
                 console.log(data)
@@ -74,7 +74,7 @@ const Signup = () => {
                         fontFamily: 'Josefin Sans',
                         m: '0'
                     }}
-                >Already have an account? <Link>Log In</Link></Text>
+                >Already have an account? <Link href={'/auth/login'}>Log In</Link></Text>
                 <Spacer y={2} />
                 <Formik initialValues={{
                     userHandle: '',

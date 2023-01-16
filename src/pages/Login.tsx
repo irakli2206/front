@@ -39,7 +39,9 @@ const Login = () => {
                 console.log(loggedUser)
                 localStorage.setItem('token', data.access_token)
                 localStorage.setItem('userId', JSON.stringify(loggedUser._id))
+                localStorage.setItem('userhandle', JSON.stringify(loggedUser.userHandle))
                 navigate('/')
+                window.location.reload()
             }
             else {
                 const data = await res?.json()

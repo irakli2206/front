@@ -9,7 +9,6 @@ import SettingsModal from './SettingsModal'
 
 const Header = () => {
     const [user, setUser] = useState<UserType>()
-    const [showLoginModal, setShowLoginModal] = useState<boolean>(false)
     const [showSettingsModal, setShowSettingsModal] = useState<boolean>(false)
     const navigate = useNavigate()
 
@@ -33,20 +32,9 @@ const Header = () => {
         localStorage.removeItem('token')
     }
 
-    const onLinkClick = (href: string) => {
-        if (user) {
-            console.log('reached')
-            navigate(href)
-        }
-        else {
-            setShowLoginModal(true)
-        }
-    }
 
-    const modalAction = () => {
-        navigate('/login')
-        setShowLoginModal(false)
-    }
+
+
 
     const settingsModalAction = (savedSettings: Settings) => {
         localStorage.setItem('settings', JSON.stringify(savedSettings))
@@ -55,10 +43,7 @@ const Header = () => {
 
     return (
         <>
-            <ActionModal actionTitle='Log In' actionHandler={modalAction}
-                closeHandler={() => setShowLoginModal(false)} visible={showLoginModal}
-                modalTitle='You need to log in to view the profile'
-            />
+
             <SettingsModal visible={showSettingsModal} closeHandler={() => setShowSettingsModal(false)}
                 actionHandler={settingsModalAction}
             />
@@ -69,15 +54,15 @@ const Header = () => {
 
                 </Navbar.Brand>
                 <Navbar.Content hideIn="xs">
-                    <Navbar.Link isActive href="/">Home</Navbar.Link>
-                    <Navbar.Link onPress={() => onLinkClick(`/23123/profile`)} >Profile</Navbar.Link>
+                    <Navbar.Link isActive={window.location.pathname == '/'} href="/">Home</Navbar.Link>
+                    <Navbar.Link isActive={window.location.pathname == `/${user?.userHandle}/profile`} href={`/${user?.userHandle}/profile`} >Profile</Navbar.Link>
                     <Navbar.Link onPress={() => setShowSettingsModal(true)} >Settings</Navbar.Link>
 
                 </Navbar.Content>
 
 
                 <Navbar.Content>
-                    {user ?
+                    {localStorage.getItem('userId') ?
                         <>
                             <Navbar.Link href="/">
                                 <Button auto flat shadow css={{ fontSize: '$md' }} onClick={logout} >
@@ -87,11 +72,11 @@ const Header = () => {
                         </>
                         :
                         <>
-                            <Navbar.Link color="inherit" href="/login">
+                            <Navbar.Link color="inherit" href="/auth/login">
                                 Login
                             </Navbar.Link>
-                            <Navbar.Link href="/signup">
-                                <Button auto flat shadow css={{ fontSize: '$md' }} >
+                            <Navbar.Link href="/auth/signup">
+                                <Button auto flat shadow css={{ fontSize: '$md' }}  >
                                     Sign Up
                                 </Button>
                             </Navbar.Link>

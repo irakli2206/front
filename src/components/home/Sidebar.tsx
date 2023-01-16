@@ -21,12 +21,19 @@ const Sidebar = ({ posts, updatePosts }: Props) => {
 
     const navigate = useNavigate()
 
+
+
     useEffect(() => {
-        const loggedUser = localStorage.getItem('user')
-        if (loggedUser) {
-            let userObject = JSON.parse(loggedUser)
-            setUser(userObject)
+        const getLoggedUser = async () => {
+            if (localStorage.getItem('userId')) {
+                //@ts-ignore
+                const loggedUserId = JSON.parse(localStorage.getItem('userId'))
+                const loggedUserResponse = await fetch(`http://localhost:3000/api/users/${loggedUserId}`)
+                const loggedUser = await loggedUserResponse.json()
+                setUser(loggedUser)
+            }
         }
+        getLoggedUser()
 
     }, [])
 

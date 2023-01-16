@@ -35,7 +35,7 @@ const Home = () => {
     const onMove = (e: ViewStateChangeEvent) => {
         setViewState(e.viewState)
     }
- 
+
 
     const getPosts = async () => {
         if (mainMap) {
@@ -80,6 +80,7 @@ const Home = () => {
                 {posts.map((post, index) => {
                     return (
                         <Marker
+                            key={index}
                             latitude={post.coordinates.latitude}
                             longitude={post.coordinates.longitude}
                         >

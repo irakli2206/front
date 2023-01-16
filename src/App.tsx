@@ -9,6 +9,7 @@ import Chirp from './pages/Chirp';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
+import { AuthenticatedProtectedRoutes, UnauthenticatedProtectedRoutes } from './components/ProtectedRoutes';
 
 function App() {
   const AppContainer = styled('div', {
@@ -18,6 +19,7 @@ function App() {
     // overflow: 'hidden'
 
   })
+
 
 
   return (
@@ -39,10 +41,15 @@ function App() {
         </Routes> */}
       <Routes>
         <Route path='/' element={<Home />} />
-        <Route path='/:userhandle/profile' element={<Profile />} />
+
         <Route path='/posts/:postId' element={<Chirp />} />
-        <Route path='/signup' element={<Signup />} />
-        <Route path='/login' element={<Login />} />
+        <Route element={<UnauthenticatedProtectedRoutes userId={localStorage.getItem('userId')} />}>
+          <Route path='/:userhandle/profile' element={<Profile />} />
+        </Route>
+        <Route element={<AuthenticatedProtectedRoutes userId={localStorage.getItem('userId')} />}>
+          <Route path='/auth/signup' element={<Signup />} />
+          <Route path='/auth/login' element={<Login />} />
+        </Route>
       </Routes>
 
     </AppContainer>

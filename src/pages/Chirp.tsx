@@ -1,16 +1,18 @@
 import { Container, styled, User, Text, Divider, Input } from '@nextui-org/react';
 import React, { useEffect, useState } from 'react'
 import { FaHeart, FaRegHeart, FaRegComment } from 'react-icons/fa';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ChirpData, UserType } from '../types/types';
 import Comment from '../components/Comment';
 import { RiSendPlaneFill } from 'react-icons/ri'
+import ActionModal from '../components/ActionModal';
 
 const Chirp = () => {
     const [post, setPost] = useState<ChirpData>()
     const [author, setAuthor] = useState<UserType>()
     const [user, setUser] = useState<UserType>()
     const [comments, setComments] = useState<any[]>([])
+    const [showLoginModal, setShowLoginModal] = useState<boolean>(false)
 
     const [liked, setLiked] = useState<boolean>(false)
 
@@ -20,6 +22,7 @@ const Chirp = () => {
     const [commentInput, setCommentInput] = useState<string>('')
 
     let { postId } = useParams();
+    const navigate = useNavigate()
 
     useEffect(() => {
         const getLoggedUser = async () => {
@@ -134,13 +137,24 @@ const Chirp = () => {
                 setCommentInput('')
             }
         }
-        else console.log('NO USER LOGGED IN')
+        else {
+            setShowLoginModal(true)
+        }
 
+    }
+
+    const modalAction = () => {
+        navigate('/login')
+        setShowLoginModal(false)
     }
 
 
     return (
         <>
+            <ActionModal actionTitle='Log In' actionHandler={modalAction}
+                closeHandler={() => setShowLoginModal(false)} visible={showLoginModal}
+                modalTitle='You need to log in to view the profile'
+            />
             {(author && post) &&
                 <CustomContainer sm>
                     <User
