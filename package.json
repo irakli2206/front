@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@chakra-ui/tabs": "^2.1.6",
     "@nextui-org/react": "^1.0.0-beta.11",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
@@ -21,6 +22,7 @@
     "react-range-slider-input": "^3.0.7",
     "react-router-dom": "^6.6.1",
     "react-scripts": "5.0.1",
+    "react-tabs": "^6.0.0",
     "typescript": "^4.9.4",
     "web-vitals": "^2.1.4",
     "yup": "^0.32.11"

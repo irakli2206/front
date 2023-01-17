@@ -1,6 +1,7 @@
 import { Container, styled, Card, Grid, Text } from '@nextui-org/react'
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import ProfilePosts from '../components/profile/ProfilePosts'
 import ProfileUser from '../components/profile/ProfileUser'
 import { BASE_URL } from '../env'
 
@@ -9,49 +10,39 @@ const Profile = () => {
   //gonna check if localStorage userId is same as the userId of profile userhandle
 
   const params = useParams()
-  const [profile, setProfile] = useState<any>()
+  const [profile, setProfile] = useState<any>({
+    _id: ''
+  })
 
   const isVisitorOwner = JSON.parse(localStorage.getItem('userId') ?? '') == profile._id
  
   useEffect(() => {
     const getProfile = async () => {
-       
-
       const profileDataResponse = await fetch(`${BASE_URL}/api/users/get-by-handle/${params.userhandle}`)
       const profileData = await profileDataResponse.json()
       setProfile(profileData)
     }
     getProfile()
   }, [])
+
+  useEffect(() => {
+    const getPosts = async () => {
+      
+    }
+    getPosts()
+  }, [profile])
  
   console.log(isVisitorOwner)
   return (
     <>
       {profile && <ProfileContainer>
         <Grid.Container gap={4}   justify='space-between'>
-          <Grid xs={12} md={6}   >
+          <Grid xs={12} md={6} css={{display: 'block !important'}}  >
             <ProfileUser {...profile} isVisitorOwner={isVisitorOwner} />
           </Grid>
           <Grid xs={12} md={6} css={{height: '100%'}}>
-            <Card
-              css={{
-                height: '100%',
-              }}
-            >
-              <Card.Header >
-                <Card.Image
-                  src={"https://nextui.org/images/card-example-4.jpeg"}
-                  objectFit="cover"
-                  width="100%"
-                  height={140}
-                  alt=''
-
-                />
-              </Card.Header>
-              <Card.Body>
-                <Text></Text>
-              </Card.Body>
-            </Card>
+            
+            <ProfilePosts {...profile} />
           </Grid>
         </Grid.Container>
       </ProfileContainer>}
