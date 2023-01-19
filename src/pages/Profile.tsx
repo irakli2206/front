@@ -11,11 +11,12 @@ const Profile = () => {
 
   const params = useParams()
   const [profile, setProfile] = useState<any>({
-    _id: ''
+    _id: '',
+    
   })
 
   const isVisitorOwner = JSON.parse(localStorage.getItem('userId') ?? '') == profile._id
- 
+
   useEffect(() => {
     const getProfile = async () => {
       const profileDataResponse = await fetch(`${BASE_URL}/api/users/get-by-handle/${params.userhandle}`)
@@ -27,22 +28,21 @@ const Profile = () => {
 
   useEffect(() => {
     const getPosts = async () => {
-      
+
     }
     getPosts()
   }, [profile])
- 
-  console.log(isVisitorOwner)
+
   return (
     <>
       {profile && <ProfileContainer>
-        <Grid.Container gap={4}   justify='space-between'>
-          <Grid xs={12} md={6} css={{display: 'block !important'}}  >
+        <Grid.Container gap={4} justify='space-between'>
+          <Grid xs={12} md={6} css={{ display: 'block !important' }}  >
             <ProfileUser {...profile} isVisitorOwner={isVisitorOwner} />
           </Grid>
-          <Grid xs={12} md={6} css={{height: '100%'}}>
-            
-            <ProfilePosts {...profile} />
+          <Grid xs={12} md={6} css={{ height: '100%' }}>
+
+            {(profile.posts && profile.likedPosts) ? <ProfilePosts {...profile} /> : <div>Nothing here</div>}
           </Grid>
         </Grid.Container>
       </ProfileContainer>}

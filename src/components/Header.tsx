@@ -39,6 +39,7 @@ const Header = () => {
     const settingsModalAction = (savedSettings: Settings) => {
         localStorage.setItem('settings', JSON.stringify(savedSettings))
         setShowSettingsModal(false)
+        window.location.reload()
     }
 
     return (

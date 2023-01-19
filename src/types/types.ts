@@ -50,6 +50,6 @@ export interface UserType {
 }
 
 export interface Settings {
-    mapZoom: number
+    mapStyle: 'light' | 'dark'
     maxVisiblePosts: number 
 }

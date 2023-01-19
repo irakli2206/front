@@ -1,4 +1,4 @@
-import { Button, Modal, styled, Text } from '@nextui-org/react'
+import { Button, Modal, Radio, styled, Text } from '@nextui-org/react'
 import React, { useState } from 'react'
 import { Settings } from '../types/types'
 import RangeSlider from 'react-range-slider-input';
@@ -10,15 +10,15 @@ type Props = {
     actionHandler: (savedSettings: Settings) => void
 }
 
+//@ts-ignore
+const localStorageSettings: Settings = localStorage.getItem('settings') ? JSON.parse(localStorage.getItem('settings')) : {}
+
 const SettingsModal = ({ visible, closeHandler, actionHandler }: Props) => {
     const [settings, setSettings] = useState<Settings>({
-        mapZoom: 6,
-        maxVisiblePosts: 30
+        mapStyle: localStorageSettings && localStorageSettings.mapStyle ? localStorageSettings.mapStyle : 'light',
+        maxVisiblePosts: 
+        localStorageSettings && localStorageSettings.maxVisiblePosts ? localStorageSettings.maxVisiblePosts : 30
     })
-
-    const onSave = () => {
-        localStorage.set('settings', JSON.stringify(settings))
-    }
 
     return (
         <Modal
@@ -29,24 +29,32 @@ const SettingsModal = ({ visible, closeHandler, actionHandler }: Props) => {
             blur
         >
             <Modal.Header>
-                <Text b id="modal-title"  size={32}>
+                <Text b id="modal-title" size={32}>
                     Settings
 
                 </Text>
             </Modal.Header>
             <Modal.Body>
-                <Text size={24}>Map Zoom </Text>
+                <Text size={24}>Map Style</Text>
                 <RangeContainer>
-
-                    <RangePicker min={2} max={16}  type='range' value={settings.mapZoom} 
-                    onChange={(e) => setSettings(prev => ({...prev, mapZoom: +e.target.value }))} />
-                    <Text>{settings.mapZoom}</Text>
+                    <Radio.Group orientation="horizontal" defaultValue="primary" value={settings.mapStyle}
+                        onChange={(e) => setSettings(prev => ({ ...prev, mapStyle: e as 'light' | 'dark' }))}
+                    >
+                        <Radio value="light"   >
+                            Light
+                        </Radio>
+                        <Radio value="dark"  >
+                            Dark
+                        </Radio>
+                    </Radio.Group>
                 </RangeContainer>
-                <Text css={{my: '$12', mb: '$8'}} size={24}>Maximum Displayed Posts</Text>
-                <RangeContainer>
+                <Text css={{ my: '$12', mb: '$8' }} size={24}>Maximum Displayed Posts</Text>
+                <RangeContainer  >
 
-                    <RangePicker min={1} max={100}  type='range' value={settings.maxVisiblePosts} 
-                    onChange={(e) => setSettings(prev => ({...prev, maxVisiblePosts: +e.target.value }))} />
+                    <RangePicker min={1} max={50} type='range' value={settings.maxVisiblePosts}
+                        onChange={(e) => setSettings(prev => ({ ...prev, maxVisiblePosts: +e.target.value }))}
+
+                    />
                     <Text>{settings.maxVisiblePosts}</Text>
                 </RangeContainer>
             </Modal.Body>
@@ -74,10 +82,6 @@ const RangeContainer = styled('div', {
 
 const RangePicker = styled('input', {
     width: '100%',
-    '&[type=range]::-webkit-slider-runnable-track': {
-        color: 'red',
-        appearance: 'none'
-    }
 })
 
 export default SettingsModal

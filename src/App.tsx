@@ -42,7 +42,7 @@ function App() {
       <Routes>
         <Route path='/' element={<Home />} />
 
-        <Route path='/posts/:postId' element={<Chirp />} />
+        <Route path='posts/:postId' element={<Chirp />} />
         <Route element={<UnauthenticatedProtectedRoutes userId={localStorage.getItem('userId')} />}>
           <Route path='/:userhandle/profile' element={<Profile />} />
         </Route>

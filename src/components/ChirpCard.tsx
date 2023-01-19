@@ -117,7 +117,7 @@ const ChirpCard = ({ _id: postId, userId, content, coordinates, likes, comments 
                         </ReactionContainer>
                         <ReactionContainer>
                             <FaRegComment size={20} onClick={() => {
-                                navigate(`posts/${postId}`)
+                                navigate(`/posts/${postId}` )
                             }
                             } />
                             {commentCount}

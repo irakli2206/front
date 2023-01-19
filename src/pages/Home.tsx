@@ -6,6 +6,9 @@ import Sidebar from '../components/home/Sidebar';
 import { Chirp, ChirpData } from '../types/types';
 import { RiMapPinFill } from 'react-icons/ri'
 import { useLocation, useSearchParams } from 'react-router-dom';
+ 
+//@ts-ignore
+const settings: Settings = localStorage.getItem('settings') ? JSON.parse(localStorage.getItem('settings')) : {}
 
 const Home = () => {
     const [viewState, setViewState] = useState({
@@ -62,7 +65,7 @@ const Home = () => {
     }
 
 
-
+    console.log(settings)
     const SidebarMemo = React.useMemo(() => <Sidebar posts={posts} updatePosts={setPosts} />, [posts])
 
 
@@ -74,7 +77,7 @@ const Home = () => {
                 onIdle={getPosts}
                 onMove={onMove}
                 id="mainMap"
-                mapStyle="mapbox://styles/mapbox/light-v9"
+                mapStyle={settings && settings.mapStyle == 'light' ? "mapbox://styles/mapbox/light-v9" : "mapbox://styles/mapbox/dark-v9"}
                 mapboxAccessToken='pk.eyJ1IjoiaXJha2xpMjIwNiIsImEiOiJja3dkZzl3dDgwa2FyMnBwbjEybjd0dmxpIn0.-XNJzlRbWG0zH2Q1MRpmOA'
             >
                 {posts.map((post, index) => {

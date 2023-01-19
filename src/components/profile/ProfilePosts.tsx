@@ -22,7 +22,8 @@ const ProfilePosts = ({ posts, likedPosts }: Props) => {
         liked: []
     })
 
-
+    console.log(data)
+ 
     const tabs = ['Posts', 'Liked Posts']
 
     useEffect(() => {
@@ -36,6 +37,7 @@ const ProfilePosts = ({ posts, likedPosts }: Props) => {
                 body: JSON.stringify(body)
             })
             const postsData = await postsDataResponse.json()
+            console.log(body)
             setData(prev => ({ ...prev, created: postsData }))
         }
         getPosts()
@@ -94,11 +96,13 @@ const ProfilePosts = ({ posts, likedPosts }: Props) => {
                     <TabPanels>
                         {tabs.map((tab, index) => {
                             const postArray = tab == 'Posts' ? data.created : data.liked
-                             
+                            const isSelected = index == selectedTab
                              
                             return postArray.map(p => {
                                 return (
-                                    <TabPanel>
+                                    <TabPanel css={{
+                                        display: isSelected ? 'block' : 'none'
+                                    }}>
                                         <ChirpCard  {...p} />
                                     </TabPanel>
                                 )
